@@ -35,9 +35,10 @@ This software is delivered as is. The author can't be held responsible for damag
 
 ## How to use
 
-Press Q to increase scrolling Speed
-Press A to decrease scrolling Speed
-Pres ESC to exit the application
+Start the program. It will enter full screen mode and show multiple instances of the Test UFO scrolling to the right.
+This allows investigation into motion clarity and strobe cross talk.
+
+* Pres ESC to exit the application
 
 ## Troubleshooting
 
