@@ -79,7 +79,7 @@ void StrobeCrossTalk::draw()
 		verticalLineX -= screen_width;
 
 	char msg[100];
-	snprintf(msg, sizeof(msg), "%d FPS, %d PPS, %d PPF", frames_per_second, pixels_per_second, pixels_per_frame);
+	snprintf(msg, sizeof(msg), "%d FPS\n%d PPS\n%d PPF", frames_per_second, pixels_per_second, pixels_per_frame);
 	msg[sizeof(msg) - 1] = '\0';
-	drawText(10, screen_height - 30, msg);
+	drawText(10, screen_height - 10, msg);
 }
