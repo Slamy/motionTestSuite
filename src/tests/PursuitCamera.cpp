@@ -124,8 +124,8 @@ void PursuitCamera::draw()
 		offset_x -= ufo_spacing_x;
 
 	char msg[100];
-	snprintf(msg, sizeof(msg), "%d frames per second, %d scrolled pixels per second, %d scrolled pixels per frame",
+	snprintf(msg, sizeof(msg), "%d frames per second\n%d scrolled pixels per second\n%d scrolled pixels per frame",
 			 frames_per_second, pixels_per_second, pixels_per_frame);
 	msg[sizeof(msg) - 1] = '\0';
-	drawText(10, screen_height - 30, msg);
+	drawText(10, screen_height - 10, msg);
 }

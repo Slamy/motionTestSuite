@@ -27,6 +27,7 @@
 #include "motionTestSuite.h"
 #include "tests/PursuitCamera.h"
 #include "tests/StrobeCrossTalk.h"
+#include "tests/VerticalText.h"
 
 static SDL_Window* window = nullptr;
 
@@ -81,7 +82,7 @@ static void deinit_texture(void)
 void drawText(int x, int y, const char* str)
 {
 	SDL_Color White				= {255, 255, 255};
-	SDL_Surface* surfaceMessage = TTF_RenderText_Blended(font, str, White);
+	SDL_Surface* surfaceMessage = TTF_RenderText_Blended_Wrapped(font, str, White, 1000);
 	GLuint texture_text;
 
 	glGenTextures(1, &texture_text);
@@ -96,7 +97,7 @@ void drawText(int x, int y, const char* str)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glTranslatef(x, y, 0);
+	glTranslatef(x, y - surfaceMessage->h, 0);
 	glColor3f(1, 1, 1);
 
 	glEnable(GL_BLEND);
@@ -298,6 +299,9 @@ static bool get_input(void)
 				break;
 			case SDLK_F2:
 				activeTest = std::make_unique<StrobeCrossTalk>();
+				break;
+			case SDLK_F3:
+				activeTest = std::make_unique<VerticalText>();
 				break;
 			case SDLK_q:
 				msdelay++;

@@ -8,6 +8,8 @@
 #ifndef SRC_MOTIONTESTSUITE_H_
 #define SRC_MOTIONTESTSUITE_H_
 
+#include <SDL2/SDL_ttf.h>
+
 extern int screen_width;
 extern int screen_height;
 
@@ -20,6 +22,7 @@ extern int frames_per_second;
 extern int textureW;
 extern int textureH;
 
+extern TTF_Font* font;
 void drawUfo(int x, int y);
 void drawText(int x, int y, const char* str);
 
