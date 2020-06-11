@@ -10,16 +10,32 @@ set(Boost_USE_STATIC_RUNTIME    OFF)
 find_package(Boost 1.66.0 COMPONENTS program_options)
 
 if(Boost_FOUND)
-	include_directories(${Boost_INCLUDE_DIRS})
+	include_directories(
+		${Boost_INCLUDE_DIRS}
+		${CMAKE_CURRENT_SOURCE_DIR}/src
+	)
 
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
-	add_executable (motionTestSuite motionTestSuite.cpp)
+	add_executable (motionTestSuite
+		src/motionTestSuite.cpp
+		src/tests/MotionTest.cpp
+		src/tests/PursuitCamera.cpp
+		src/tests/StrobeCrossTalk.cpp
+		)
+		
 	target_link_libraries (motionTestSuite
 		SDL2
 		GL
 		GLU
+		SDL2_ttf
 		${Boost_LIBRARIES}
 		)
 
 endif()
+
+configure_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/testpattern.bmp
+	${CMAKE_CURRENT_BINARY_DIR}/testpattern.bmp
+	COPYONLY)
+
