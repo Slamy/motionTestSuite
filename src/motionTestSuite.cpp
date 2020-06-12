@@ -31,8 +31,8 @@
 
 static SDL_Window* window = nullptr;
 
-int screen_width  = 2560;
-int screen_height = 1440;
+int screen_width  = 1920;
+int screen_height = 700;
 
 GLuint texture_ufo;
 
@@ -206,11 +206,11 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	const char* fontpath = "/mnt/harddisk/usr/share/fonts/truetype/freefont/FreeSans.ttf";
+	const char* fontpath = "font.ttf";
 	font				 = TTF_OpenFont(fontpath, 20);
 	if (font == NULL)
 	{
-		printf("Unable to load font: %s %s \n", fontpath, TTF_GetError());
+		printf("Unable to load font %s: %s \n", fontpath, TTF_GetError());
 		return 1;
 	}
 
