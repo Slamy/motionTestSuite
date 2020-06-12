@@ -40,3 +40,19 @@ configure_file(
 	${CMAKE_CURRENT_BINARY_DIR}/testpattern.bmp
 	COPYONLY)
 
+find_file(FONT
+	NAMES
+	FreeSans.ttf
+	FreeSerif.ttf
+	arial.ttf
+	REQUIRED
+	PATHS
+	"/usr/share/fonts/truetype/freefont"
+	"C:/Windows/Fonts/"
+	)
+
+configure_file(
+	${FONT}
+	${CMAKE_CURRENT_BINARY_DIR}/font.ttf
+	COPYONLY)
+	
