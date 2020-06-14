@@ -25,6 +25,7 @@
 #include <unistd.h>
 
 #include "motionTestSuite.h"
+#include "tests/Contrast.h"
 #include "tests/GridPattern.h"
 #include "tests/PursuitCamera.h"
 #include "tests/SingleColor.h"
@@ -244,7 +245,7 @@ int main(int argc, char* argv[])
 	if (strobeCrossTalkTest)
 		activeTest = std::make_unique<StrobeCrossTalk>();
 	else
-		activeTest = std::make_unique<GridPattern>();
+		activeTest = std::make_unique<PursuitCamera>();
 
 	int frames_per_second_cnt;
 	while (true)
@@ -308,23 +309,26 @@ static bool get_input(void)
 			case SDLK_F3:
 				activeTest = std::make_unique<VerticalText>();
 				break;
-			case SDLK_F4:
+			case SDLK_1:
 				activeTest = std::make_unique<SingleColor>(1, 0, 0);
 				break;
-			case SDLK_F5:
+			case SDLK_2:
 				activeTest = std::make_unique<SingleColor>(0, 1, 0);
 				break;
-			case SDLK_F6:
+			case SDLK_3:
 				activeTest = std::make_unique<SingleColor>(0, 0, 1);
 				break;
-			case SDLK_F7:
+			case SDLK_4:
 				activeTest = std::make_unique<SingleColor>(1, 1, 1);
 				break;
-			case SDLK_F8:
+			case SDLK_5:
 				activeTest = std::make_unique<SingleColor>(0, 0, 0);
 				break;
-			case SDLK_F9:
+			case SDLK_F4:
 				activeTest = std::make_unique<GridPattern>();
+				break;
+			case SDLK_F5:
+				activeTest = std::make_unique<Contrast>();
 				break;
 			case SDLK_q:
 				msdelay++;
