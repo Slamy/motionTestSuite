@@ -38,7 +38,20 @@ This software is delivered as is. The author can't be held responsible for damag
 Start the program. It will enter full screen mode and show multiple instances of the Test UFO scrolling to the right.
 This allows investigation into motion clarity and strobe cross talk.
 
-* Pres ESC to exit the application
+### Keyboard Shortcuts
+
+* ESC: to exit the application
+* F1: Pursuit Camera
+* F2: Strobe Cross Talk
+* F3: Vertical Scrolling Text
+* F4: Convergence Test Grid
+* F5: Contrast Stripes
+* 1: Red Screen
+* 2: Green Screen
+* 3: Blue Screen
+* 4: White Screen
+* 5: Black Screen
+
 
 ## Troubleshooting
 
@@ -65,7 +78,7 @@ And VSYNC must be active.
 
 ### Micro Stutter
 
-I currently have this issue but I don't know why this happens...
+I currently have this issue sometimes but I don't know why this happens...
 
 ### I have motion sickness now
 
