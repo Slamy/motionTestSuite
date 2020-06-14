@@ -45,6 +45,9 @@ void StrobeCrossTalk::draw()
 	glLoadIdentity();
 	gluOrtho2D(0, screen_width, 0, screen_height);
 
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
 	int y = 0;
 	int x = 0;
 

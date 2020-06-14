@@ -23,6 +23,8 @@ if(Boost_FOUND)
 		src/tests/PursuitCamera.cpp
 		src/tests/StrobeCrossTalk.cpp
 		src/tests/VerticalText.cpp
+		src/tests/GridPattern.cpp
+		src/tests/SingleColor.cpp
 		)
 		
 	target_link_libraries (motionTestSuite
