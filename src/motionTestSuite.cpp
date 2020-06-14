@@ -25,7 +25,9 @@
 #include <unistd.h>
 
 #include "motionTestSuite.h"
+#include "tests/GridPattern.h"
 #include "tests/PursuitCamera.h"
+#include "tests/SingleColor.h"
 #include "tests/StrobeCrossTalk.h"
 #include "tests/VerticalText.h"
 
@@ -172,12 +174,14 @@ int main(int argc, char* argv[])
 	bool activateVSync		 = false;
 	bool activateFullScreen	 = false;
 	bool strobeCrossTalkTest = false;
+	int display				 = 0;
 
 	// clang-format off
 	desc.add_options()
 	    ("help", "produce help message")
 	    ("vsync", po::bool_switch(&activateVSync)->default_value(false), "Activate VSync")
 	    ("msdelay", po::value<int>(&msdelay)->default_value(0), "Force delay between each frame")
+		("display", po::value<int>(&display)->default_value(0), "Select display to use")
 		("strobe", po::bool_switch(&strobeCrossTalkTest)->default_value(false), "Activates strobe cross talk test")
 		("full", po::bool_switch(&activateFullScreen)->default_value(false), "Full screen mode")
 		;
@@ -224,8 +228,9 @@ int main(int argc, char* argv[])
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	window = SDL_CreateWindow("Slamy's SDL Motion Test Suite", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-							  screen_width, screen_height, sdlWindowFlags);
+	window = SDL_CreateWindow("Slamy's SDL Motion Test Suite", SDL_WINDOWPOS_CENTERED_DISPLAY(display),
+							  SDL_WINDOWPOS_CENTERED_DISPLAY(display), screen_width, screen_height, sdlWindowFlags);
+
 	SDL_GLContext context = SDL_GL_CreateContext(window);
 
 	glDisable(GL_DEPTH_TEST);
@@ -239,7 +244,7 @@ int main(int argc, char* argv[])
 	if (strobeCrossTalkTest)
 		activeTest = std::make_unique<StrobeCrossTalk>();
 	else
-		activeTest = std::make_unique<PursuitCamera>();
+		activeTest = std::make_unique<GridPattern>();
 
 	int frames_per_second_cnt;
 	while (true)
@@ -302,6 +307,24 @@ static bool get_input(void)
 				break;
 			case SDLK_F3:
 				activeTest = std::make_unique<VerticalText>();
+				break;
+			case SDLK_F4:
+				activeTest = std::make_unique<SingleColor>(1, 0, 0);
+				break;
+			case SDLK_F5:
+				activeTest = std::make_unique<SingleColor>(0, 1, 0);
+				break;
+			case SDLK_F6:
+				activeTest = std::make_unique<SingleColor>(0, 0, 1);
+				break;
+			case SDLK_F7:
+				activeTest = std::make_unique<SingleColor>(1, 1, 1);
+				break;
+			case SDLK_F8:
+				activeTest = std::make_unique<SingleColor>(0, 0, 0);
+				break;
+			case SDLK_F9:
+				activeTest = std::make_unique<GridPattern>();
 				break;
 			case SDLK_q:
 				msdelay++;
