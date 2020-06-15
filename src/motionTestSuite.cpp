@@ -27,6 +27,7 @@
 #include "motionTestSuite.h"
 #include "tests/Contrast.h"
 #include "tests/GridPattern.h"
+#include "tests/MprtTest.h"
 #include "tests/PursuitCamera.h"
 #include "tests/SingleColor.h"
 #include "tests/StrobeCrossTalk.h"
@@ -51,7 +52,7 @@ SDL_Surface* surface_ufo = nullptr;
 
 TTF_Font* font = nullptr;
 
-std::unique_ptr<MotionTest> activeTest;
+std::shared_ptr<MotionTest> activeTest;
 
 namespace po = boost::program_options;
 
@@ -243,9 +244,9 @@ int main(int argc, char* argv[])
 	time_t lastT = time(NULL);
 
 	if (strobeCrossTalkTest)
-		activeTest = std::make_unique<StrobeCrossTalk>();
+		activeTest = std::make_shared<StrobeCrossTalk>();
 	else
-		activeTest = std::make_unique<PursuitCamera>();
+		activeTest = std::make_shared<PursuitCamera>();
 
 	int frames_per_second_cnt;
 	while (true)
@@ -301,35 +302,39 @@ static bool get_input(void)
 				return false;
 				break;
 			case SDLK_F1:
-				activeTest = std::make_unique<PursuitCamera>();
+				activeTest = std::make_shared<PursuitCamera>();
 				break;
 			case SDLK_F2:
-				activeTest = std::make_unique<StrobeCrossTalk>();
+				activeTest = std::make_shared<StrobeCrossTalk>();
 				break;
 			case SDLK_F3:
-				activeTest = std::make_unique<VerticalText>();
+				activeTest = std::make_shared<VerticalText>();
 				break;
 			case SDLK_1:
-				activeTest = std::make_unique<SingleColor>(1, 0, 0);
+				activeTest = std::make_shared<SingleColor>(1, 0, 0);
 				break;
 			case SDLK_2:
-				activeTest = std::make_unique<SingleColor>(0, 1, 0);
+				activeTest = std::make_shared<SingleColor>(0, 1, 0);
 				break;
 			case SDLK_3:
-				activeTest = std::make_unique<SingleColor>(0, 0, 1);
+				activeTest = std::make_shared<SingleColor>(0, 0, 1);
 				break;
 			case SDLK_4:
-				activeTest = std::make_unique<SingleColor>(1, 1, 1);
+				activeTest = std::make_shared<SingleColor>(1, 1, 1);
 				break;
 			case SDLK_5:
-				activeTest = std::make_unique<SingleColor>(0, 0, 0);
+				activeTest = std::make_shared<SingleColor>(0, 0, 0);
 				break;
 			case SDLK_F4:
-				activeTest = std::make_unique<GridPattern>();
+				activeTest = std::make_shared<GridPattern>();
 				break;
 			case SDLK_F5:
-				activeTest = std::make_unique<Contrast>();
+				activeTest = std::make_shared<Contrast>();
 				break;
+			case SDLK_F6:
+				activeTest = std::make_shared<MprtTest>();
+				break;
+#if 0
 			case SDLK_q:
 				msdelay++;
 				break;
@@ -337,9 +342,51 @@ static bool get_input(void)
 				if (msdelay > 0)
 					msdelay--;
 				break;
-			}
+#endif
 
-			break;
+			case SDLK_e:
+			{
+				MprtTest* mprt = dynamic_cast<MprtTest*>(activeTest.get());
+				if (mprt)
+					mprt->alterCheckerBoardSize(-1);
+				break;
+			}
+			case SDLK_r:
+			{
+				MprtTest* mprt = dynamic_cast<MprtTest*>(activeTest.get());
+				if (mprt)
+					mprt->alterCheckerBoardSize(1);
+				break;
+			}
+			case SDLK_d:
+			{
+				MprtTest* mprt = dynamic_cast<MprtTest*>(activeTest.get());
+				if (mprt)
+					mprt->alterThickness(-1);
+				break;
+			}
+			case SDLK_f:
+			{
+				MprtTest* mprt = dynamic_cast<MprtTest*>(activeTest.get());
+				if (mprt)
+					mprt->alterThickness(1);
+				break;
+			}
+			case SDLK_c:
+			{
+				MprtTest* mprt = dynamic_cast<MprtTest*>(activeTest.get());
+				if (mprt)
+					mprt->alterPixelsPerFrame(-1);
+				break;
+			}
+			case SDLK_v:
+			{
+				MprtTest* mprt = dynamic_cast<MprtTest*>(activeTest.get());
+				if (mprt)
+					mprt->alterPixelsPerFrame(1);
+				break;
+			}
+			}
 		}
 	}
 	return true;

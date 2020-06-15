@@ -26,6 +26,7 @@ if(Boost_FOUND)
 		src/tests/GridPattern.cpp
 		src/tests/SingleColor.cpp
 		src/tests/Contrast.cpp
+		src/tests/MprtTest.cpp
 		)
 		
 	target_link_libraries (motionTestSuite
