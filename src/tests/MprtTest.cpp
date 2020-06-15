@@ -68,6 +68,12 @@ void MprtTest::draw()
 
 	int pixelsPerSecond = pixelsPerFrame * frames_per_second;
 
+	static int ufo_x = -pixelsPerFrame * 20;
+	ufo_x += pixelsPerFrame;
+	if (ufo_x > screen_width)
+		ufo_x = -pixelsPerFrame * 20;
+	drawUfo(ufo_x, screen_height / 2);
+
 	// This is directly taken from the JavaScript source code of:
 	// https://www.testufo.com/mprt#background=000000&foreground=ffffff&size=12&thickness=2&pursuit=0&ppf=0
 
@@ -75,16 +81,18 @@ void MprtTest::draw()
 				 (static_cast<double>(checkerBoardSize) - static_cast<double>(thickness) / 2.0);
 	double mprt = 1000.0 / mcr;
 
+	double ms_per_frame = 1000.0 / static_cast<double>(frames_per_second);
+
 	char msg[300];
 	snprintf(msg, sizeof(msg),
 			 "Checkerboard Size: %d Pixels (change with E and R)\n"
 			 "Thickness: %d Pixels (change with D and F)\n"
 			 "Pixels per Frame %d (change with C and V)\n"
-			 "Frame Rate %d fps\n"
+			 "Frame Rate %d fps / %.2f mspf\n"
 			 "Pixels per Second %d\n"
 			 "Motion Clarity Ratio (MCR): %.0f\n"
 			 "Persistence: %.1fms (MPRT)\n",
-			 checkerBoardSize, thickness, pixelsPerFrame, frames_per_second, pixelsPerSecond, mcr, mprt);
+			 checkerBoardSize, thickness, pixelsPerFrame, frames_per_second, ms_per_frame, pixelsPerSecond, mcr, mprt);
 	msg[sizeof(msg) - 1] = '\0';
 	drawText(10, screen_height - 10, msg);
 }
