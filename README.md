@@ -46,6 +46,7 @@ This allows investigation into motion clarity and strobe cross talk.
 * F3: Vertical Scrolling Text
 * F4: Convergence Test Grid
 * F5: Contrast Stripes
+* F6: Motion Picture Response Time
 * 1: Red Screen
 * 2: Green Screen
 * 3: Blue Screen
