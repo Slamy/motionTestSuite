@@ -326,12 +326,15 @@ static bool get_input(void)
 				activeTest = std::make_shared<SingleColor>(0, 0, 0);
 				break;
 			case SDLK_F4:
-				activeTest = std::make_shared<GridPattern>();
+				activeTest = std::make_shared<GridPattern>(false);
 				break;
 			case SDLK_F5:
-				activeTest = std::make_shared<Contrast>();
+				activeTest = std::make_shared<GridPattern>(true);
 				break;
 			case SDLK_F6:
+				activeTest = std::make_shared<Contrast>();
+				break;
+			case SDLK_F7:
 				activeTest = std::make_shared<MprtTest>();
 				break;
 #if 0
