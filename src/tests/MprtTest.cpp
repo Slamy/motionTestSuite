@@ -46,7 +46,7 @@ void MprtTest::draw()
 	static int offset_x = 0;
 	for (y = 0; y < screen_height / 2; y += checkerBoardSize)
 	{
-		for (x = -checkerBoardSize * 2; x < screen_width + checkerBoardSize; x += checkerBoardSize * 2)
+		for (x = -checkerBoardSize * 10; x < screen_width + checkerBoardSize; x += checkerBoardSize * 2)
 		{
 			int drawX = x + offset_x;
 			if (evenChecker)
@@ -63,8 +63,8 @@ void MprtTest::draw()
 	glEnd();
 
 	offset_x += pixelsPerFrame;
-	if (offset_x >= checkerBoardSize * 2)
-		offset_x -= checkerBoardSize * 2;
+	if (offset_x >= checkerBoardSize * 10)
+		offset_x -= checkerBoardSize * 10;
 
 	int pixelsPerSecond = pixelsPerFrame * frames_per_second;
 

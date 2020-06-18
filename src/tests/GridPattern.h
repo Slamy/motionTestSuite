@@ -15,14 +15,19 @@ class GridPattern : public MotionTest
   public:
 	virtual void draw();
 	virtual ~GridPattern() = default;
-	GridPattern();
+	GridPattern(bool focus);
 
   private:
+	void convergenceGrid();
+	void focusGrid();
+
 	int gridCellSize;
 	int cellsHorizontal;
 	int cellsVertical;
 	int offsetX;
 	int offsetY;
+
+	bool focus;
 };
 
 #endif /* SRC_TESTS_GRIDPATTERN_H_ */
