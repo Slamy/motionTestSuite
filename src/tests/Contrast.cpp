@@ -23,29 +23,55 @@
 
 #include "motionTestSuite.h"
 
-static void drawRect(int y, int rect_height, uint8_t r, uint8_t g, uint8_t b)
+void Contrast::drawRect(int y, int rect_height, uint8_t r, uint8_t g, uint8_t b)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glTranslatef(0, y, 0);
 
-	glColor3ub(r, g, b);
+	if (steps)
+	{
 
-	glBegin(GL_QUADS);
+		int i;
+		int width = screen_width / steps;
+		for (i = 0; i < steps; i++)
+		{
+			glPushMatrix();
 
-	glColor3ub(0, 0, 0);
-	glVertex2f(0, rect_height + 5);
+			glTranslatef(i * width, 0, 0);
 
-	glColor3ub(0, 0, 0);
-	glVertex2f(0, 0);
+			glColor3ub(r * i / steps, g * i / steps, b * i / steps);
 
-	glColor3ub(r, g, b);
-	glVertex2f(screen_width, 0);
+			glBegin(GL_QUADS);
 
-	glColor3ub(r, g, b);
-	glVertex2f(screen_width, rect_height + 5);
+			glVertex2f(0, rect_height + 5);
+			glVertex2f(0, 0);
+			glVertex2f(width, 0);
+			glVertex2f(width, rect_height + 5);
 
-	glEnd();
+			glEnd();
+			glPopMatrix();
+		}
+	}
+	else
+	{
+
+		glBegin(GL_QUADS);
+
+		glColor3ub(0, 0, 0);
+		glVertex2f(0, rect_height + 5);
+
+		glColor3ub(0, 0, 0);
+		glVertex2f(0, 0);
+
+		glColor3ub(r, g, b);
+		glVertex2f(screen_width, 0);
+
+		glColor3ub(r, g, b);
+		glVertex2f(screen_width, rect_height + 5);
+
+		glEnd();
+	}
 }
 
 void Contrast::draw()

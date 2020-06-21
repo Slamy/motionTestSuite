@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	int sdlWindowFlags = SDL_WINDOW_OPENGL;
+	int sdlWindowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	if (activateFullScreen)
 	{
 		sdlWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -293,9 +293,71 @@ static bool get_input(void)
 	{
 		switch (event.type)
 		{
+		case SDL_WINDOWEVENT:
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+			{
+				screen_width  = event.window.data1;
+				screen_height = event.window.data2;
+				// printf("Resized to %d %d\n", event.window.data1, event.window.data2);
+				activeTest->screenResized();
+			}
+			break;
 		case SDL_QUIT:
 			return false; // The little X in the window got pressed
 		case SDL_KEYDOWN:
+		{
+			SingleColor* singleColor = dynamic_cast<SingleColor*>(activeTest.get());
+			if (singleColor)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_1:
+					singleColor->setColor(1, 0, 0);
+					break;
+				case SDLK_2:
+					singleColor->setColor(0, 1, 0);
+					break;
+				case SDLK_3:
+					singleColor->setColor(0, 0, 1);
+					break;
+				case SDLK_4:
+					singleColor->setColor(1, 1, 1);
+					break;
+				case SDLK_5:
+					singleColor->setColor(0, 0, 0);
+					break;
+				}
+			}
+
+			GridPattern* gridPattern = dynamic_cast<GridPattern*>(activeTest.get());
+			if (gridPattern)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_1:
+					gridPattern->setColor(1, 1, 1);
+					break;
+				case SDLK_2:
+					gridPattern->setColor(1, 1, 0);
+					break;
+				case SDLK_3:
+					gridPattern->setColor(0, 1, 1);
+					break;
+				case SDLK_4:
+					gridPattern->setColor(1, 0, 1);
+					break;
+				case SDLK_5:
+					gridPattern->setColor(1, 0, 0);
+					break;
+				case SDLK_6:
+					gridPattern->setColor(0, 1, 0);
+					break;
+				case SDLK_7:
+					gridPattern->setColor(0, 0, 1);
+					break;
+				}
+			}
+
 			switch (event.key.keysym.sym)
 			{
 			case SDLK_ESCAPE:
@@ -310,21 +372,6 @@ static bool get_input(void)
 			case SDLK_F3:
 				activeTest = std::make_shared<VerticalText>();
 				break;
-			case SDLK_1:
-				activeTest = std::make_shared<SingleColor>(1, 0, 0);
-				break;
-			case SDLK_2:
-				activeTest = std::make_shared<SingleColor>(0, 1, 0);
-				break;
-			case SDLK_3:
-				activeTest = std::make_shared<SingleColor>(0, 0, 1);
-				break;
-			case SDLK_4:
-				activeTest = std::make_shared<SingleColor>(1, 1, 1);
-				break;
-			case SDLK_5:
-				activeTest = std::make_shared<SingleColor>(0, 0, 0);
-				break;
 			case SDLK_F4:
 				activeTest = std::make_shared<GridPattern>(false);
 				break;
@@ -332,10 +379,16 @@ static bool get_input(void)
 				activeTest = std::make_shared<GridPattern>(true);
 				break;
 			case SDLK_F6:
-				activeTest = std::make_shared<Contrast>();
+				activeTest = std::make_shared<Contrast>(0);
 				break;
 			case SDLK_F7:
+				activeTest = std::make_shared<Contrast>(32);
+				break;
+			case SDLK_F8:
 				activeTest = std::make_shared<MprtTest>();
+				break;
+			case SDLK_F9:
+				activeTest = std::make_shared<SingleColor>(1, 1, 1);
 				break;
 #if 0
 			case SDLK_q:
@@ -390,6 +443,7 @@ static bool get_input(void)
 				break;
 			}
 			}
+		}
 		}
 	}
 	return true;
