@@ -25,25 +25,8 @@
 
 GridPattern::GridPattern(bool focus)
 {
-	this->focus	 = focus;
-	gridCellSize = 32;
-	while (((screen_width % gridCellSize) == 0) || ((screen_height % gridCellSize) == 0))
-	{
-		// If this is the case there is part of the grid missing. Select another grid size.
-		gridCellSize--;
-	}
-
-	std::cout << "grid cell size " << gridCellSize << std ::endl;
-	std::cout << "grid pattern border " << screen_width % gridCellSize << " " << screen_height % gridCellSize
-			  << std ::endl;
-
-	cellsHorizontal = screen_width / gridCellSize;
-	cellsVertical	= screen_height / gridCellSize;
-	offsetX			= (screen_width % gridCellSize) / 2;
-	offsetY			= (screen_height % gridCellSize) / 2;
-
-	std::cout << "grid offsetX " << offsetX << std ::endl;
-	std::cout << "grid offsetY " << offsetY << std ::endl;
+	this->focus = focus;
+	calculateGridSize();
 }
 
 void GridPattern::draw()
@@ -67,7 +50,7 @@ void GridPattern::convergenceGrid()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glColor3f(red, green, blue);
 	glLineWidth(1.0f);
 
 	glBegin(GL_LINES);
@@ -77,14 +60,14 @@ void GridPattern::convergenceGrid()
 	for (y = 0; y < cellsVertical + 1; y++)
 	{
 		glVertex2i(offsetX, offsetY + y * gridCellSize);
-		glVertex2i(screen_width - offsetX, offsetY + y * gridCellSize);
+		glVertex2i(screen_width - offsetX - 1, offsetY + y * gridCellSize);
 	}
 
 	// draw vertical lines
 	for (x = 0; x < cellsHorizontal + 1; x++)
 	{
 		glVertex2i(1 + offsetX + x * gridCellSize, offsetY - 1);
-		glVertex2i(1 + offsetX + x * gridCellSize, screen_height - offsetY);
+		glVertex2i(1 + offsetX + x * gridCellSize, screen_height - offsetY - 1);
 	}
 	glEnd();
 
@@ -101,6 +84,28 @@ void GridPattern::convergenceGrid()
 	}
 
 	glEnd();
+}
+
+void GridPattern::calculateGridSize()
+{
+	gridCellSize = 32;
+	while (((screen_width % gridCellSize) == 0) || ((screen_height % gridCellSize) == 0))
+	{
+		// If this is the case there is part of the grid missing. Select another grid size.
+		gridCellSize--;
+	}
+
+	std::cout << "grid cell size " << gridCellSize << std ::endl;
+	std::cout << "grid pattern border " << screen_width % gridCellSize << " " << screen_height % gridCellSize
+			  << std ::endl;
+
+	cellsHorizontal = screen_width / gridCellSize;
+	cellsVertical	= screen_height / gridCellSize;
+	offsetX			= (screen_width % gridCellSize) / 2;
+	offsetY			= (screen_height % gridCellSize) / 2;
+
+	std::cout << "grid offsetX " << offsetX << std ::endl;
+	std::cout << "grid offsetY " << offsetY << std ::endl;
 }
 
 void GridPattern::focusGrid()

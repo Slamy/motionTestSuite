@@ -13,7 +13,15 @@
 class Contrast : public MotionTest
 {
   public:
+	Contrast(int steps)
+	{
+		this->steps = steps;
+	}
 	virtual void draw();
 	virtual ~Contrast() = default;
+	void drawRect(int y, int rect_height, uint8_t r, uint8_t g, uint8_t b);
+
+  private:
+	int steps;
 };
 #endif /* SRC_TESTS_CONTRAST_H_ */

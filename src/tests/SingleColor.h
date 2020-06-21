@@ -22,6 +22,13 @@ class SingleColor : public MotionTest
 		blue  = b;
 	}
 
+	void setColor(float r, float g, float b)
+	{
+		red	  = r;
+		green = g;
+		blue  = b;
+	}
+
   private:
 	float red	= 0;
 	float green = 0;

@@ -13,6 +13,7 @@
 class MotionTest
 {
   public:
+	virtual void screenResized(){};
 	virtual void draw()	  = 0;
 	virtual ~MotionTest() = default;
 };
