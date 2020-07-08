@@ -27,6 +27,8 @@ static void drawPursuitPattern(int centerY, int pursuit_spacing_x, int offset_x)
 {
 	int stickLen = 4;
 
+	glLineWidth(1.0f);
+
 	glBegin(GL_LINES);
 	glColor3f(0.5f, 0.0f, 0.5f);
 

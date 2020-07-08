@@ -99,6 +99,7 @@ void Contrast::draw()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	glLineWidth(1.0f);
 	glColor3f(1, 1, 1);
 	glBegin(GL_LINE_STRIP);
 
