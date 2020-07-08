@@ -27,6 +27,8 @@ class GridPattern : public MotionTest
 		red	  = r;
 		green = g;
 		blue  = b;
+
+		whiteBackground = (r + g + b == 0);
 	}
 
   private:
@@ -45,6 +47,8 @@ class GridPattern : public MotionTest
 	float red	= 1;
 	float green = 1;
 	float blue	= 1;
+
+	bool whiteBackground = false;
 };
 
 #endif /* SRC_TESTS_GRIDPATTERN_H_ */

@@ -31,7 +31,11 @@ GridPattern::GridPattern(bool focus)
 
 void GridPattern::draw()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 0);
+	if (whiteBackground)
+		glClearColor(1.0f, 1.0f, 1.0f, 0);
+	else
+		glClearColor(0.0f, 0.0f, 0.0f, 0);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glViewport(0, 0, screen_width, screen_height);

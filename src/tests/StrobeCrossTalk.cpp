@@ -25,6 +25,9 @@
 
 static void drawVerticalLine(int x)
 {
+
+	glLineWidth(1.0f);
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 

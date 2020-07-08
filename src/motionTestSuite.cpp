@@ -355,6 +355,9 @@ static bool get_input(void)
 				case SDLK_7:
 					gridPattern->setColor(0, 0, 1);
 					break;
+				case SDLK_8:
+					gridPattern->setColor(0, 0, 0);
+					break;
 				}
 			}
 
