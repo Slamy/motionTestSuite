@@ -111,7 +111,8 @@ VerticalText::VerticalText()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surfaceMessage->w, surfaceMessage->h, 0, GL_BGRA, GL_UNSIGNED_BYTE,
+	int stride = surfaceMessage->pitch / surfaceMessage->format->BytesPerPixel;
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stride, surfaceMessage->h, 0, GL_BGRA, GL_UNSIGNED_BYTE,
 				 surfaceMessage->pixels);
 }
 
