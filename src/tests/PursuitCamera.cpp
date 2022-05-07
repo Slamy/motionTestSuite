@@ -84,7 +84,7 @@ void PursuitCamera::draw()
 	int y = 0;
 	int x = 0;
 
-	int spacing_y		  = 130;
+	int spacing_y		  = 132;
 	int ufo_spacing_x	  = 140;
 	int pursuit_spacing_x = ufo_spacing_x / 2;
 	static int offset_x	  = 0;
@@ -101,7 +101,7 @@ void PursuitCamera::draw()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glColor3f(1.0f, 1.0f, 1.0f);
-	for (y = 0; y < 3; y++)
+	for (y = -1; y < 3; y++)
 	{
 		for (x = -ufo_spacing_x + offset_x; x < screen_width; x += ufo_spacing_x)
 		{
@@ -114,10 +114,11 @@ void PursuitCamera::draw()
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 	// Pursuit Pattern
-
 	drawPursuitPattern(startY, pursuit_spacing_x, offset_x);
 	drawPursuitPattern(startY + spacing_y, pursuit_spacing_x, offset_x);
 	drawPursuitPattern(startY + spacing_y * 2, pursuit_spacing_x, offset_x);
+	drawPursuitPattern(startY - spacing_y, pursuit_spacing_x, offset_x);
+	drawPursuitPattern(startY - spacing_y*2, pursuit_spacing_x, offset_x);
 
 	frame_cnt++;
 

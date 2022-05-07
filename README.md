@@ -17,7 +17,6 @@ I really wanted to remove the Browser from the chain as I believe a native appli
 
 ## Disclaimer
 
-The project contains a hard copy of the test ufo from blur busters. It's not my intention to cause copyright infringement but have a similar image to test with.
 This software is delivered as is. The author can't be held responsible for damages caused by the execution.
 
 ## How to build
@@ -31,12 +30,20 @@ This software is delivered as is. The author can't be held responsible for damag
 	mkdir ../motionTestSuite_build
 	cd ../motionTestSuite_build
 	cmake -DCMAKE_ECLIPSE_GENERATE_LINKED_RESOURCES=OFF -G "Eclipse CDT4 - Unix Makefiles" ../motionTestSuite
-	
 
 ## How to use
 
-Start the program. It will enter full screen mode and show multiple instances of the Test UFO scrolling to the right.
-This allows investigation into motion clarity and strobe cross talk.
+    Allowed options:
+      --help                produce help message
+      --vsync               Activate VSync
+      --msdelay arg (=0)    Force delay between each frame
+      --display arg (=0)    Select display to use
+      --strobe              Activates strobe cross talk test
+      --full                Full screen mode
+
+For pursuit camera test you probably want to use
+
+    ./motionTestSuite --vsync --full
 
 ### Keyboard Shortcuts
 
@@ -44,14 +51,17 @@ This allows investigation into motion clarity and strobe cross talk.
 * F1: Pursuit Camera
 * F2: Strobe Cross Talk
 * F3: Vertical Scrolling Text
-* F4: Convergence Test Grid
-* F5: Contrast Stripes
-* F6: Motion Picture Response Time
-* 1: Red Screen
-* 2: Green Screen
-* 3: Blue Screen
-* 4: White Screen
-* 5: Black Screen
+* F4: Convergence Test Grid (for CRTs)
+* F5: Sharpness Test Grid (for CRTs)
+* F6: Linear Contrast Stripes
+* F7: Contrast Stripes in 32 steps
+* F8: Motion Picture Response Time
+* F9: Solid Color
+    * 1: Red Screen
+    * 2: Green Screen
+    * 3: Blue Screen
+    * 4: White Screen
+    * 5: Black Screen
 
 
 ## Troubleshooting
