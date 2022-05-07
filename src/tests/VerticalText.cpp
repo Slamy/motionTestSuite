@@ -95,7 +95,7 @@ void VerticalText::draw()
 		offset_y -= spacing_y;
 
 	char msg[100];
-	snprintf(msg, sizeof(msg), "%d FPS\n%d PPS\n%d PPF", frames_per_second, pixels_per_second, pixels_per_frame);
+	snprintf(msg, sizeof(msg), "%.2f FPS\n%d PPS\n%d PPF", frames_per_second, pixels_per_second, pixels_per_frame);
 	msg[sizeof(msg) - 1] = '\0';
 	drawText(10, screen_height - 10, msg);
 }

@@ -21,6 +21,8 @@
 #include <cstdio>
 #include <functional>
 #include <iostream>
+#include <list>
+#include <numeric>
 #include <sys/time.h>
 #include <unistd.h>
 
@@ -45,8 +47,9 @@ int moving_target_height = 0;
 int pixels_per_frame	 = 6;
 int pixels_per_second	 = 960;
 int frame_cnt			 = 0;
+int out_of_sync_cnt		 = 0;
 
-int frames_per_second = 0;
+double frames_per_second = 0;
 
 SDL_Surface* surface_target = nullptr;
 
@@ -174,7 +177,7 @@ int main(int argc, char* argv[])
 {
 	int opt;
 	po::options_description desc("Allowed options");
-	bool activateVSync		 = false;
+	bool disable_vsnc		 = false;
 	bool activateFullScreen	 = false;
 	bool strobeCrossTalkTest = false;
 	int display				 = 0;
@@ -182,7 +185,7 @@ int main(int argc, char* argv[])
 	// clang-format off
 	desc.add_options()
 	    ("help", "produce help message")
-	    ("vsync", po::bool_switch(&activateVSync)->default_value(false), "Activate VSync")
+	    ("novsync", po::bool_switch(&disable_vsnc)->default_value(false), "Disables VSync")
 	    ("msdelay", po::value<int>(&msdelay)->default_value(0), "Force delay between each frame")
 		("display", po::value<int>(&display)->default_value(0), "Select display to use")
 		("strobe", po::bool_switch(&strobeCrossTalkTest)->default_value(false), "Activates strobe cross talk test")
@@ -199,6 +202,27 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	// Ensure execution is performed on the same core
+	cpu_set_t set;
+	CPU_ZERO(&set);
+	CPU_SET(1, &set);
+
+	// Activate Real Time Scheduler
+	struct sched_param sp;
+	sp.sched_priority = sched_get_priority_max(SCHED_RR);
+	if (sp.sched_priority == -1)
+	{
+		std::cout << "sched_get_priority_min failed\n";
+		return 1;
+	}
+
+	if (sched_setscheduler(0, SCHED_FIFO, &sp) == -1)
+	{
+		std::cout << "sched_setscheduler failed\n";
+		return 1;
+	}
+
+	// Initialize SDL Context
 	int sdlWindowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	if (activateFullScreen)
 	{
@@ -213,6 +237,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	// Read the font
 	const char* fontpath = "font.ttf";
 	font				 = TTF_OpenFont(fontpath, 20);
 	if (font == NULL)
@@ -221,7 +246,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	// Load the image from the file into SDL's surface representation
+	// Load the test pattern image from the file into SDL's surface representation
 	surface_target = SDL_LoadBMP("testpattern.bmp");
 	if (surface_target == NULL)
 	{
@@ -237,7 +262,7 @@ int main(int argc, char* argv[])
 	SDL_GLContext context = SDL_GL_CreateContext(window);
 
 	glDisable(GL_DEPTH_TEST);
-	SDL_GL_SetSwapInterval(activateVSync ? 1 : 0);
+	SDL_GL_SetSwapInterval(disable_vsnc ? 0 : 1);
 	SDL_GetWindowSize(window, &screen_width, &screen_height);
 
 	init_texture();
@@ -249,30 +274,57 @@ int main(int argc, char* argv[])
 	else
 		activeTest = std::make_shared<PursuitCamera>();
 
-	int frames_per_second_cnt;
+	int frames_cnt	  = 0;
+	double last_frame = 0;
+	std::list<double> last_frame_times;
+
 	while (true)
 	{
 		if (!get_input())
 			break;
 
 		activeTest->draw();
+
+		if (out_of_sync_cnt)
+		{
+			drawText(30, 40, "OUT OF SYNC!!!");
+			out_of_sync_cnt--;
+		}
+
 		SDL_GL_SwapWindow(window);
 
 		if (msdelay)
 			usleep(msdelay * 1000);
 
-		time_t nowT = time(NULL);
-		frames_per_second_cnt++;
-		if (nowT != lastT)
+		frames_cnt++;
+
+		struct timespec tp;
+		clock_gettime(CLOCK_MONOTONIC, &tp);
+		double now	= (tp.tv_nsec / 1000000.0 + tp.tv_sec * 1000.0);
+		double diff = now - last_frame;
+
+		last_frame_times.push_back(diff);
+		if (last_frame_times.size() > 30)
+			last_frame_times.pop_front();
+
+		double diff_avg =
+			std::accumulate(std::begin(last_frame_times), std::end(last_frame_times), 0.0) / last_frame_times.size();
+
+		if (frames_cnt > 30)
 		{
-			frames_per_second = frames_per_second_cnt;
-			lastT			  = nowT;
+			frames_per_second = 1000.0 / diff_avg;
 			pixels_per_frame  = roundf((float)pixels_per_second / (float)frames_per_second);
 			if (pixels_per_frame > 20)
 				pixels_per_frame = 20;
 
-			frames_per_second_cnt = 0;
+			if (abs(diff_avg - diff) > 3)
+			{
+				std::cout << "Frame " << frames_cnt << " out of sync: " << diff << " !~= " << diff_avg << std::endl;
+				out_of_sync_cnt = frames_per_second;
+			}
 		}
+
+		last_frame = now;
 	}
 
 	deinit_texture();

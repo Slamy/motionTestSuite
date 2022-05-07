@@ -17,7 +17,8 @@ extern int pixels_per_frame;
 extern int pixels_per_second;
 extern int frame_cnt;
 
-extern int frames_per_second;
+extern double frames_per_second;
+extern int out_of_sync_cnt;
 
 extern int moving_target_width;
 extern int moving_target_height;

@@ -73,7 +73,10 @@ static void drawUfoBackground(int y, uint8_t r, uint8_t g, uint8_t b)
 
 void PursuitCamera::draw()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 0);
+	if (out_of_sync_cnt)
+		glClearColor(0.4f, 0.0f, 0.0f, 0);
+	else
+		glClearColor(0.0f, 0.0f, 0.0f, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glViewport(0, 0, screen_width, screen_height);
@@ -127,7 +130,7 @@ void PursuitCamera::draw()
 		offset_x -= ufo_spacing_x;
 
 	char msg[100];
-	snprintf(msg, sizeof(msg), "%d frames per second\n%d scrolled pixels per second\n%d scrolled pixels per frame",
+	snprintf(msg, sizeof(msg), "%.2f frames per second\n%d scrolled pixels per second\n%d scrolled pixels per frame",
 			 frames_per_second, pixels_per_second, pixels_per_frame);
 	msg[sizeof(msg) - 1] = '\0';
 	drawText(10, screen_height - 10, msg);

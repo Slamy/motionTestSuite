@@ -25,7 +25,10 @@
 
 void MprtTest::draw()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 0);
+	if (out_of_sync_cnt)
+		glClearColor(0.4f, 0.0f, 0.0f, 0);
+	else
+		glClearColor(0.0f, 0.0f, 0.0f, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glViewport(0, 0, screen_width, screen_height);
@@ -88,7 +91,7 @@ void MprtTest::draw()
 			 "Checkerboard Size: %d Pixels (change with E and R)\n"
 			 "Thickness: %d Pixels (change with D and F)\n"
 			 "Pixels per Frame %d (change with C and V)\n"
-			 "Frame Rate %d fps / %.2f mspf\n"
+			 "Frame Rate %.2f fps / %.2f mspf\n"
 			 "Pixels per Second %d\n"
 			 "Motion Clarity Ratio (MCR): %.0f\n"
 			 "Persistence: %.1fms (MPRT)\n",

@@ -39,7 +39,11 @@ static void drawVerticalLine(int x)
 
 void StrobeCrossTalk::draw()
 {
-	glClearColor(0.0f, 0.5f, 0.5f, 0);
+	if (out_of_sync_cnt)
+		glClearColor(0.4f, 0.0f, 0.0f, 0);
+	else
+		glClearColor(0.0f, 0.5f, 0.5f, 0);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glViewport(0, 0, screen_width, screen_height);
@@ -71,7 +75,7 @@ void StrobeCrossTalk::draw()
 		y_row++;
 	}
 
-	drawVerticalLine(verticalLineX);
+	//drawVerticalLine(verticalLineX);
 
 	frame_cnt++;
 
@@ -84,7 +88,7 @@ void StrobeCrossTalk::draw()
 		verticalLineX -= screen_width;
 
 	char msg[100];
-	snprintf(msg, sizeof(msg), "%d FPS\n%d PPS\n%d PPF", frames_per_second, pixels_per_second, pixels_per_frame);
+	snprintf(msg, sizeof(msg), "%.2f FPS\n%d PPS\n%d PPF", frames_per_second, pixels_per_second, pixels_per_frame);
 	msg[sizeof(msg) - 1] = '\0';
 	drawText(10, screen_height - 10, msg);
 }

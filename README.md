@@ -35,7 +35,7 @@ This software is delivered as is. The author can't be held responsible for damag
 
     Allowed options:
       --help                produce help message
-      --vsync               Activate VSync
+      --novsync             Disables VSync
       --msdelay arg (=0)    Force delay between each frame
       --display arg (=0)    Select display to use
       --strobe              Activates strobe cross talk test
