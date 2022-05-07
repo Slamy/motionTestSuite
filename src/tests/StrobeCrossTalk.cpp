@@ -25,7 +25,6 @@
 
 static void drawVerticalLine(int x)
 {
-
 	glLineWidth(1.0f);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -55,7 +54,7 @@ void StrobeCrossTalk::draw()
 	int x = 0;
 
 	int spacing_y		= 107;
-	int spacing_x		= 140;
+	int spacing_x		= 160;
 	static int offset_x = 0;
 
 	int y_row = 0;

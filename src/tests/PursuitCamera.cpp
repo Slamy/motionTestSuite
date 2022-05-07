@@ -32,11 +32,11 @@ static void drawPursuitPattern(int centerY, int pursuit_spacing_x, int offset_x)
 	glBegin(GL_LINES);
 	glColor3f(0.5f, 0.0f, 0.5f);
 
-	glVertex2f(0, centerY + textureH + 10);
-	glVertex2f(screen_width, centerY + textureH + 10);
+	glVertex2f(0, centerY + moving_target_height + 10);
+	glVertex2f(screen_width, centerY + moving_target_height + 10);
 
-	glVertex2f(0, centerY + textureH + 10 + stickLen * 4 + 1);
-	glVertex2f(screen_width, centerY + textureH + 10 + stickLen * 4 + 1);
+	glVertex2f(0, centerY + moving_target_height + 10 + stickLen * 4 + 1);
+	glVertex2f(screen_width, centerY + moving_target_height + 10 + stickLen * 4 + 1);
 	glEnd();
 
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -47,7 +47,7 @@ static void drawPursuitPattern(int centerY, int pursuit_spacing_x, int offset_x)
 		glBegin(GL_LINES);
 		glColor3f(1.0f, 1.0f, 1.0f);
 
-		int y = centerY + textureH + 10 + (frame_cnt % 4) * stickLen;
+		int y = centerY + moving_target_height + 10 + (frame_cnt % 4) * stickLen;
 
 		glVertex2f(x, y);
 		glVertex2f(x, y + stickLen);
@@ -64,10 +64,10 @@ static void drawUfoBackground(int y, uint8_t r, uint8_t g, uint8_t b)
 	glColor3ub(r, g, b);
 
 	glBegin(GL_QUADS);
-	glVertex2f(0, textureH + 5);
+	glVertex2f(0, moving_target_height + 5);
 	glVertex2f(0, -5);
 	glVertex2f(screen_width, -5);
-	glVertex2f(screen_width, textureH + 5);
+	glVertex2f(screen_width, moving_target_height + 5);
 	glEnd();
 }
 
@@ -84,8 +84,8 @@ void PursuitCamera::draw()
 	int y = 0;
 	int x = 0;
 
-	int spacing_y		  = 132;
-	int ufo_spacing_x	  = 140;
+	int spacing_y		  = moving_target_height + 36;
+	int ufo_spacing_x	  = 160;
 	int pursuit_spacing_x = ufo_spacing_x / 2;
 	static int offset_x	  = 0;
 
@@ -118,7 +118,7 @@ void PursuitCamera::draw()
 	drawPursuitPattern(startY + spacing_y, pursuit_spacing_x, offset_x);
 	drawPursuitPattern(startY + spacing_y * 2, pursuit_spacing_x, offset_x);
 	drawPursuitPattern(startY - spacing_y, pursuit_spacing_x, offset_x);
-	drawPursuitPattern(startY - spacing_y*2, pursuit_spacing_x, offset_x);
+	drawPursuitPattern(startY - spacing_y * 2, pursuit_spacing_x, offset_x);
 
 	frame_cnt++;
 

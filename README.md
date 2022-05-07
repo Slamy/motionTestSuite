@@ -91,6 +91,18 @@ And VSYNC must be active.
 
 I currently have this issue sometimes but I don't know why this happens...
 
+### I want to use the official Blur Busters TestUFO as a moving target
+
+The `testpattern.png` file can be replaced with a custom graphic.
+To use the Blur Busters TestUFO execute these lines on the shell:
+
+	wget https://www.testufo.com/images-test/ghosting/bbufo-tinytext-markers.png
+	convert bbufo-tinytext-markers.png testpattern.bmp
+
+Please keep in mind that this application might not be suitable for official testing means
+as it might not behave exactly the same as https://www.testufo.com/ would.
+Results from the motionTestSuite and https://www.testufo.com/ must **never** be compared against each other.
+
 ### I have motion sickness now
 
 You are not supposed to look at the test for more than a few seconds

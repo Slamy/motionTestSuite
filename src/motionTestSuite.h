@@ -19,8 +19,8 @@ extern int frame_cnt;
 
 extern int frames_per_second;
 
-extern int textureW;
-extern int textureH;
+extern int moving_target_width;
+extern int moving_target_height;
 
 extern TTF_Font* font;
 void drawUfo(int x, int y);

@@ -40,15 +40,15 @@ int screen_height = 700;
 
 GLuint texture_ufo;
 
-int textureW		  = 0;
-int textureH		  = 0;
-int pixels_per_frame  = 6;
-int pixels_per_second = 960;
-int frame_cnt		  = 0;
+int moving_target_width	 = 0;
+int moving_target_height = 0;
+int pixels_per_frame	 = 6;
+int pixels_per_second	 = 960;
+int frame_cnt			 = 0;
 
 int frames_per_second = 0;
 
-SDL_Surface* surface_ufo = nullptr;
+SDL_Surface* surface_target = nullptr;
 
 TTF_Font* font = nullptr;
 
@@ -61,21 +61,21 @@ static int msdelay = 0;
 
 static void init_texture(void)
 {
-	assert(surface_ufo);
+	assert(surface_target);
 
 	glGenTextures(1, &texture_ufo);
 	glBindTexture(GL_TEXTURE_2D, texture_ufo);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface_ufo->w, surface_ufo->h, 0, GL_BGRA, GL_UNSIGNED_BYTE,
-				 surface_ufo->pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface_target->w, surface_target->h, 0, GL_BGRA, GL_UNSIGNED_BYTE,
+				 surface_target->pixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	textureW = surface_ufo->w;
-	textureH = surface_ufo->h;
-	printf("Texture %d %d\n", textureW, textureH);
+	moving_target_width	 = surface_target->w;
+	moving_target_height = surface_target->h;
+	printf("Texture %d %d\n", moving_target_width, moving_target_height);
 
 	// Unload SDL's copy of the data; we don't need it anymore because OpenGL now stores it in the texture.
-	SDL_FreeSurface(surface_ufo);
+	SDL_FreeSurface(surface_target);
 }
 static void deinit_texture(void)
 {
@@ -147,16 +147,16 @@ void drawUfo(int x, int y)
 	// perform the actual drawing of the UFO as a quad
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0);
-	glVertex2f(0, textureH);
+	glVertex2f(0, moving_target_height);
 
 	glTexCoord2f(0, 1);
 	glVertex2f(0, 0);
 
 	glTexCoord2f(1, 1);
-	glVertex2f(textureW, 0);
+	glVertex2f(moving_target_width, 0);
 
 	glTexCoord2f(1, 0);
-	glVertex2f(textureW, textureH);
+	glVertex2f(moving_target_width, moving_target_height);
 	glEnd();
 
 	// Tell OpenGL that all subsequent drawing operations should NOT try to use the current 2D texture
@@ -222,8 +222,8 @@ int main(int argc, char* argv[])
 	}
 
 	// Load the image from the file into SDL's surface representation
-	surface_ufo = SDL_LoadBMP("testpattern.bmp");
-	if (surface_ufo == NULL)
+	surface_target = SDL_LoadBMP("testpattern.bmp");
+	if (surface_target == NULL)
 	{
 		printf("Error: \"%s\"\n", SDL_GetError());
 		return 1;
