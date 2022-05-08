@@ -47,10 +47,12 @@ int moving_target_width	 = 0;
 int moving_target_height = 0;
 int pixels_per_frame	 = 6;
 int pixels_per_second	 = 960;
-int frame_cnt			 = 0;
-int out_of_sync_cnt		 = 0;
-double frames_per_second = 0;
-double frame_times_avg	 = 0;
+
+int frame_cnt				  = 0;
+int out_of_sync_cnt			  = 0;
+double frames_per_second	  = 0;
+double frame_times_avg		  = 0;
+static bool draw_jitter_graph = true;
 
 std::list<double> last_frame_times;
 
@@ -63,7 +65,13 @@ std::shared_ptr<MotionTest> activeTest;
 namespace po = boost::program_options;
 
 static bool get_input(void);
-static int msdelay = 0;
+static int msdelay			= 0;
+static uint32_t speed_index = 5;
+
+// Same speeds as with https://www.testufo.com/
+static std::vector<int> possible_pixels_per_second{
+	0, 120, 240, 480, 720, 960, 1200, 1440, 1920, 2560,
+};
 
 static void init_texture(void)
 {
@@ -173,17 +181,18 @@ void drawJitterGraph()
 {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glTranslatef(100, 100, 0);
+	glTranslatef(30, 60, 0);
 
 	// Draw horizontal green lines.
 	// One in the center and two at the "limits"
 	// We define the "limit" as half of the the available head room
 
-	static constexpr double kPixelPerJitterMs	 = 10.0;
 	static constexpr int kDistanceBetweenSamples = 3;
 	static constexpr int kSampleWidth			 = 5;
 	static constexpr int kSampleXSteps			 = kSampleWidth + kDistanceBetweenSamples;
-	static constexpr double kHeadRoom			 = 0.5;
+	static constexpr double kHeadRoomFactor		 = 0.6;
+	double head_room_ms							 = frame_times_avg * kHeadRoomFactor;
+	static constexpr double kHeadRoomPixelSize	 = 30;
 
 	glColor3f(0, 1, 0);
 
@@ -191,15 +200,11 @@ void drawJitterGraph()
 	glVertex2f(-10, 0);
 	glVertex2f(10 + last_frame_times.size() * kSampleXSteps, 0);
 
-	double sample = frame_times_avg * kHeadRoom;
+	glVertex2f(-10, kHeadRoomPixelSize);
+	glVertex2f(10 + last_frame_times.size() * kSampleXSteps, kHeadRoomPixelSize);
 
-	glVertex2f(-10, sample * kPixelPerJitterMs);
-	glVertex2f(10 + last_frame_times.size() * kSampleXSteps, sample * kPixelPerJitterMs);
-
-	sample = -frame_times_avg * kHeadRoom;
-
-	glVertex2f(-10, sample * kPixelPerJitterMs);
-	glVertex2f(10 + last_frame_times.size() * kSampleXSteps, sample * kPixelPerJitterMs);
+	glVertex2f(-10, -kHeadRoomPixelSize);
+	glVertex2f(10 + last_frame_times.size() * kSampleXSteps, -kHeadRoomPixelSize);
 	glEnd();
 
 	glColor3f(1, 0, 0);
@@ -208,17 +213,17 @@ void drawJitterGraph()
 	int index = 0;
 	for (const auto& val : last_frame_times)
 	{
-		int offset			= index * kSampleXSteps;
-		sample				= val - frame_times_avg;
-		double pixel_sample = sample * kPixelPerJitterMs;
-		if (abs(pixel_sample) < 1)
+		int offset				  = index * kSampleXSteps;
+		double frame_time_diff_ms = val - frame_times_avg;
+		double frame_time_pixels  = frame_time_diff_ms * kHeadRoomPixelSize / head_room_ms;
+		if (abs(frame_time_pixels) < 1)
 		{
-			pixel_sample = -1;
+			frame_time_pixels = -1;
 		}
 		glVertex2f(offset + 0, 0);
 		glVertex2f(offset + kSampleWidth, 0);
-		glVertex2f(offset + kSampleWidth, pixel_sample);
-		glVertex2f(offset + 0, pixel_sample);
+		glVertex2f(offset + kSampleWidth, frame_time_pixels);
+		glVertex2f(offset + 0, frame_time_pixels);
 
 		index++;
 	}
@@ -236,7 +241,7 @@ int main(int argc, char* argv[])
 
 	// clang-format off
 	desc.add_options()
-	    ("help", "produce help message")
+	    ("help,h", "produce help message")
 	    ("novsync", po::bool_switch(&disable_vsnc)->default_value(false), "Disables VSync")
 	    ("msdelay", po::value<int>(&msdelay)->default_value(0), "Force delay between each frame")
 		("display", po::value<int>(&display)->default_value(0), "Select display to use")
@@ -348,7 +353,7 @@ int main(int argc, char* argv[])
 			out_of_sync_cnt--;
 		}
 
-		if (frames_cnt > 40 && activeTest->MustBeJitterFree())
+		if (frames_cnt > 40 && activeTest->MustBeJitterFree() && draw_jitter_graph)
 		{
 			drawJitterGraph();
 		}
@@ -378,11 +383,14 @@ int main(int argc, char* argv[])
 		if (frames_cnt > 30)
 		{
 			frames_per_second = 1000.0 / frame_times_avg;
+			pixels_per_second = possible_pixels_per_second.at(speed_index);
 			pixels_per_frame  = roundf((float)pixels_per_second / (float)frames_per_second);
 			if (pixels_per_frame > 20)
 				pixels_per_frame = 20;
 
-			if (abs(frame_times_avg - diff) > 3)
+			static constexpr double kHeadRoomFactor = 0.6;
+			double head_room_ms						= frame_times_avg * kHeadRoomFactor;
+			if (abs(frame_times_avg - diff) > head_room_ms)
 			{
 				std::cout << "Frame " << frames_cnt << " out of sync: " << diff << " !~= " << frame_times_avg
 						  << std::endl;
@@ -516,15 +524,15 @@ static bool get_input(void)
 			case SDLK_F9:
 				activeTest = std::make_shared<SingleColor>(1, 1, 1);
 				break;
-#if 0
+
 			case SDLK_q:
-				msdelay++;
+				if (speed_index < possible_pixels_per_second.size() - 1)
+					speed_index++;
 				break;
 			case SDLK_a:
-				if (msdelay > 0)
-					msdelay--;
+				if (speed_index)
+					speed_index--;
 				break;
-#endif
 
 			case SDLK_e:
 			{
@@ -566,6 +574,11 @@ static bool get_input(void)
 				MprtTest* mprt = dynamic_cast<MprtTest*>(activeTest.get());
 				if (mprt)
 					mprt->alterPixelsPerFrame(1);
+				break;
+			}
+			case SDLK_j:
+			{
+				draw_jitter_graph = !draw_jitter_graph;
 				break;
 			}
 			}

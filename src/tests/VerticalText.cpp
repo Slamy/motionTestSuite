@@ -39,7 +39,10 @@ const char* loremIpsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elit
 
 void VerticalText::draw()
 {
-	glClearColor(1, 1, 1, 0);
+	if (out_of_sync_cnt)
+		glClearColor(0.4f, 0.0f, 0.0f, 0);
+	else
+		glClearColor(1, 1, 1, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glViewport(0, 0, screen_width, screen_height);

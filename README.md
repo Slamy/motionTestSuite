@@ -62,7 +62,9 @@ For pursuit camera test you probably want to use
     * 3: Blue Screen
     * 4: White Screen
     * 5: Black Screen
-
+* Q: Increase scrolled pixels per second
+* A: Decrease scrolled pixels per second
+* J: Toggle Jitter Visualisation Graph
 
 ## Known bugs
 
@@ -95,6 +97,14 @@ If the stutter remains, the VSync settings might be off:
 * Configure VSync as "Automatic"
 
 It should be fine now.
+
+### Frame Stutter in Windowed mode is not resolvable
+
+Please use the full screen mode.
+Only have **one** monitor active during testing.
+
+Having the full screen mode active should indicate to the driver that FLIP mode shall be used.
+At least with Nvidia drivers this should now do it.
 
 ### Frame Stutter when moving the mouse cursor between Windows
 
