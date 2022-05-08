@@ -16,9 +16,14 @@
 class VerticalText : public MotionTest
 {
   public:
-	virtual void draw();
+	void draw() override;
 	VerticalText();
 	virtual ~VerticalText();
+
+	bool MustBeJitterFree() override
+	{
+		return true;
+	}
 
   private:
 	SDL_Surface* surfaceMessage = nullptr;

@@ -15,6 +15,11 @@ class PursuitCamera : public MotionTest
   public:
 	virtual void draw();
 	virtual ~PursuitCamera() = default;
+
+	bool MustBeJitterFree() override
+	{
+		return true;
+	}
 };
 
 #endif /* SRC_TESTS_PURSUITCAMERA_H_ */

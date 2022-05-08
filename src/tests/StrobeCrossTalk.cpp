@@ -54,6 +54,8 @@ void StrobeCrossTalk::draw()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	glColor3f(1.0f, 1.0f, 1.0f);
+
 	int y = 0;
 	int x = 0;
 
@@ -75,7 +77,7 @@ void StrobeCrossTalk::draw()
 		y_row++;
 	}
 
-	//drawVerticalLine(verticalLineX);
+	// drawVerticalLine(verticalLineX);
 
 	frame_cnt++;
 

@@ -16,6 +16,11 @@ class MotionTest
 	virtual void screenResized(){};
 	virtual void draw()	  = 0;
 	virtual ~MotionTest() = default;
+
+	virtual bool MustBeJitterFree()
+	{
+		return false;
+	}
 };
 
 #endif /* SRC_TESTS_MOTIONTEST_H_ */

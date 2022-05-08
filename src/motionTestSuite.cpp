@@ -23,6 +23,7 @@
 #include <iostream>
 #include <list>
 #include <numeric>
+#include <sys/resource.h>
 #include <sys/time.h>
 #include <unistd.h>
 
@@ -38,7 +39,7 @@
 static SDL_Window* window = nullptr;
 
 int screen_width  = 1920;
-int screen_height = 700;
+int screen_height = 900;
 
 GLuint texture_ufo;
 
@@ -48,8 +49,10 @@ int pixels_per_frame	 = 6;
 int pixels_per_second	 = 960;
 int frame_cnt			 = 0;
 int out_of_sync_cnt		 = 0;
-
 double frames_per_second = 0;
+double frame_times_avg	 = 0;
+
+std::list<double> last_frame_times;
 
 SDL_Surface* surface_target = nullptr;
 
@@ -166,11 +169,60 @@ void drawUfo(int x, int y)
 	glDisable(GL_TEXTURE_2D);
 }
 
-double getTime()
+void drawJitterGraph()
 {
-	struct timeval t;
-	gettimeofday(&t, NULL);
-	return t.tv_sec + ((double)t.tv_usec) / (1000.0 * 1000.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glTranslatef(100, 100, 0);
+
+	// Draw horizontal green lines.
+	// One in the center and two at the "limits"
+	// We define the "limit" as half of the the available head room
+
+	static constexpr double kPixelPerJitterMs	 = 10.0;
+	static constexpr int kDistanceBetweenSamples = 3;
+	static constexpr int kSampleWidth			 = 5;
+	static constexpr int kSampleXSteps			 = kSampleWidth + kDistanceBetweenSamples;
+	static constexpr double kHeadRoom			 = 0.5;
+
+	glColor3f(0, 1, 0);
+
+	glBegin(GL_LINES);
+	glVertex2f(-10, 0);
+	glVertex2f(10 + last_frame_times.size() * kSampleXSteps, 0);
+
+	double sample = frame_times_avg * kHeadRoom;
+
+	glVertex2f(-10, sample * kPixelPerJitterMs);
+	glVertex2f(10 + last_frame_times.size() * kSampleXSteps, sample * kPixelPerJitterMs);
+
+	sample = -frame_times_avg * kHeadRoom;
+
+	glVertex2f(-10, sample * kPixelPerJitterMs);
+	glVertex2f(10 + last_frame_times.size() * kSampleXSteps, sample * kPixelPerJitterMs);
+	glEnd();
+
+	glColor3f(1, 0, 0);
+
+	glBegin(GL_QUADS);
+	int index = 0;
+	for (const auto& val : last_frame_times)
+	{
+		int offset			= index * kSampleXSteps;
+		sample				= val - frame_times_avg;
+		double pixel_sample = sample * kPixelPerJitterMs;
+		if (abs(pixel_sample) < 1)
+		{
+			pixel_sample = -1;
+		}
+		glVertex2f(offset + 0, 0);
+		glVertex2f(offset + kSampleWidth, 0);
+		glVertex2f(offset + kSampleWidth, pixel_sample);
+		glVertex2f(offset + 0, pixel_sample);
+
+		index++;
+	}
+	glEnd();
 }
 
 int main(int argc, char* argv[])
@@ -202,11 +254,6 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	// Ensure execution is performed on the same core
-	cpu_set_t set;
-	CPU_ZERO(&set);
-	CPU_SET(1, &set);
-
 	// Activate Real Time Scheduler
 	struct sched_param sp;
 	sp.sched_priority = sched_get_priority_max(SCHED_RR);
@@ -216,7 +263,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	if (sched_setscheduler(0, SCHED_FIFO, &sp) == -1)
+	if (sched_setscheduler(0, SCHED_RR, &sp) == -1)
 	{
 		std::cout << "sched_setscheduler failed\n";
 		return 1;
@@ -229,7 +276,7 @@ int main(int argc, char* argv[])
 		sdlWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 	}
 
-	SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_NOPARACHUTE);
+	SDL_Init(SDL_INIT_VIDEO);
 
 	if (TTF_Init() == -1)
 	{
@@ -254,6 +301,14 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	if (!activateFullScreen)
+	{
+		// In Windowed mode, the Compositor is allowed to stay to avoid switching back and forth.
+		// For Full Screen we could do this as well, to avoid a frame drop after 1 second.
+		// But this leads to possible frame stutter.
+		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
+	}
+
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	window = SDL_CreateWindow("Slamy's SDL Motion Test Suite", SDL_WINDOWPOS_CENTERED_DISPLAY(display),
@@ -267,8 +322,6 @@ int main(int argc, char* argv[])
 
 	init_texture();
 
-	time_t lastT = time(NULL);
-
 	if (strobeCrossTalkTest)
 		activeTest = std::make_shared<StrobeCrossTalk>();
 	else
@@ -276,12 +329,16 @@ int main(int argc, char* argv[])
 
 	int frames_cnt	  = 0;
 	double last_frame = 0;
-	std::list<double> last_frame_times;
 
-	while (true)
+	bool running{true};
+
+	std::cout << "PID: " << getpid() << std::endl;
+
+	while (running)
 	{
+
 		if (!get_input())
-			break;
+			running = false;
 
 		activeTest->draw();
 
@@ -289,6 +346,11 @@ int main(int argc, char* argv[])
 		{
 			drawText(30, 40, "OUT OF SYNC!!!");
 			out_of_sync_cnt--;
+		}
+
+		if (frames_cnt > 40 && activeTest->MustBeJitterFree())
+		{
+			drawJitterGraph();
 		}
 
 		SDL_GL_SwapWindow(window);
@@ -303,24 +365,32 @@ int main(int argc, char* argv[])
 		double now	= (tp.tv_nsec / 1000000.0 + tp.tv_sec * 1000.0);
 		double diff = now - last_frame;
 
-		last_frame_times.push_back(diff);
-		if (last_frame_times.size() > 30)
-			last_frame_times.pop_front();
+		if (frames_cnt > 10)
+		{
+			last_frame_times.push_back(diff);
+			if (last_frame_times.size() > 100)
+				last_frame_times.pop_front();
+		}
 
-		double diff_avg =
+		frame_times_avg =
 			std::accumulate(std::begin(last_frame_times), std::end(last_frame_times), 0.0) / last_frame_times.size();
 
 		if (frames_cnt > 30)
 		{
-			frames_per_second = 1000.0 / diff_avg;
+			frames_per_second = 1000.0 / frame_times_avg;
 			pixels_per_frame  = roundf((float)pixels_per_second / (float)frames_per_second);
 			if (pixels_per_frame > 20)
 				pixels_per_frame = 20;
 
-			if (abs(diff_avg - diff) > 3)
+			if (abs(frame_times_avg - diff) > 3)
 			{
-				std::cout << "Frame " << frames_cnt << " out of sync: " << diff << " !~= " << diff_avg << std::endl;
-				out_of_sync_cnt = frames_per_second;
+				std::cout << "Frame " << frames_cnt << " out of sync: " << diff << " !~= " << frame_times_avg
+						  << std::endl;
+
+				if (frames_cnt > frames_per_second * 3 && activeTest->MustBeJitterFree())
+				{
+					out_of_sync_cnt = frames_per_second;
+				}
 			}
 		}
 

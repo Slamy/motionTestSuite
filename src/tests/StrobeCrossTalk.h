@@ -15,6 +15,11 @@ class StrobeCrossTalk : public MotionTest
   public:
 	virtual void draw();
 	virtual ~StrobeCrossTalk() = default;
+
+	bool MustBeJitterFree() override
+	{
+		return true;
+	}
 };
 
 #endif /* SRC_TESTS_STROBECROSSTALK_H_ */

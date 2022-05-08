@@ -36,7 +36,7 @@ This software is delivered as is. The author can't be held responsible for damag
     Allowed options:
       --help                produce help message
       --novsync             Disables VSync
-      --msdelay arg (=0)    Force delay between each frame
+      --msdelay arg (=0)    Force delay between each frame (for VRR tests)
       --display arg (=0)    Select display to use
       --strobe              Activates strobe cross talk test
       --full                Full screen mode
@@ -64,11 +64,43 @@ For pursuit camera test you probably want to use
     * 5: Black Screen
 
 
+## Known bugs
+
+### Consistent frame drop after a few seconds in full screen mode.
+
+This is caused by disabling the desktop compositor to increase performance.
+Most Linux full screen applications do this and I can't solve this.
+The Compositor is reenabled after exiting the application.
+
+The "OUT OF SYNC" analysis is suppressed during the first 3 seconds because of this.
+
 ## Troubleshooting
 
-### Multiple Monitor setup
+### Frame Stutter in Multi-Monitor setup
 
-Having multiple monitors attached might cause problems with the frame rate. I've experimented with a 144 Hz and a 60 Hz monitor in operation at the same time. Even so the application was displayed on the 144 Hz monitor the frame rate was reduced to 60 Hz. Please consider this.
+Having multiple monitors attached might cause problems with the frame rate.
+I've experimented with a 144 Hz and a 60 Hz monitor in operation at the same time.
+But Xorg or the Nvidia driver are causing extreme stutter. This can be fixed by having the same refresh rate on all monitors.
+
+### Extreme Frame Stutter in Windowed mode
+
+The Compositor must be active for the Windowed mode to work.
+
+For KDE just press Shift+Alt+F12 to toggle Compositor mode.
+The visuals of the desktop should alter immediatly as windows should be
+casting shadows when the Compositor is active.
+
+If the stutter remains, the VSync settings might be off:
+* Start Compositor from the Launcher to show its settings
+* Configure VSync as "Automatic"
+
+It should be fine now.
+
+### Frame Stutter when moving the mouse cursor between Windows
+
+This is why we can't have nice things...
+It's especially bad when I move my cursor in and out a Firefox window.
+Keep your cursor always on the the MotionTestSuite during testing.
 
 ### API analysis using NVIDA driver
 
@@ -79,19 +111,9 @@ You can check if the test is executed with the correct framerate by activating A
 * Check "Enable Graphics API Visual Indicator"
 * Start the application.
 * Look at the upper left of the screen
-* Expected is something like:
+* VSYNC must be active/green
 
-	GL 120 FPS
-	FLIP - VSYNC ON
-
-If FLIP is BLIT something is wrong.
-And VSYNC must be active.
-
-### Micro Stutter
-
-I currently have this issue sometimes but I don't know why this happens...
-
-### I want to use the official Blur Busters TestUFO as a moving target
+### I want to use the official Blur Busters UFO as a moving target
 
 The `testpattern.png` file can be replaced with a custom graphic.
 To use the Blur Busters TestUFO execute these lines on the shell:
@@ -106,3 +128,4 @@ Results from the motionTestSuite and https://www.testufo.com/ must **never** be 
 ### I have motion sickness now
 
 You are not supposed to look at the test for more than a few seconds
+

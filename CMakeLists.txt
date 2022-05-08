@@ -1,6 +1,6 @@
 
 cmake_minimum_required (VERSION 2.8.11)
-project (MotionTestSuite CXX)
+project (MotionTestSuite CXX C)
 
 set(Boost_USE_STATIC_LIBS        ON)  # only find static libs
 set(Boost_USE_DEBUG_LIBS         OFF) # ignore debug libs and
@@ -59,4 +59,9 @@ configure_file(
 	${FONT}
 	${CMAKE_CURRENT_BINARY_DIR}/font.ttf
 	COPYONLY)
-	
+
+add_custom_target(applyCodeStyle
+	COMMAND find -iname *.h -o -iname *.cpp -o -iname *.o | grep -v build | xargs clang-format -i
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+

@@ -16,6 +16,11 @@ class MprtTest : public MotionTest
 	virtual void draw();
 	virtual ~MprtTest() = default;
 
+	bool MustBeJitterFree() override
+	{
+		return true;
+	}
+
 	void alterCheckerBoardSize(int incDec)
 	{
 		checkerBoardSize += incDec;
