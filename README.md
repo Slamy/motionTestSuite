@@ -134,6 +134,7 @@ To use the Blur Busters TestUFO execute these lines on the shell:
 Please keep in mind that this application might not be suitable for official testing means
 as it might not behave exactly the same as https://www.testufo.com/ would.
 Results from the motionTestSuite and https://www.testufo.com/ must **never** be compared against each other.
+To ensure this policy, this application has a pursuit track with different coloring and pattern.
 
 ### I have motion sickness now
 

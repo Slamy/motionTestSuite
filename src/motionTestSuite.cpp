@@ -53,6 +53,8 @@ int out_of_sync_cnt			  = 0;
 double frames_per_second	  = 0;
 double frame_times_avg		  = 0;
 static bool draw_jitter_graph = true;
+static int frames_cnt		  = 0;
+static int ignore_frametime	  = 10;
 
 std::list<double> last_frame_times;
 
@@ -332,7 +334,6 @@ int main(int argc, char* argv[])
 	else
 		activeTest = std::make_shared<PursuitCamera>();
 
-	int frames_cnt	  = 0;
 	double last_frame = 0;
 
 	bool running{true};
@@ -341,7 +342,6 @@ int main(int argc, char* argv[])
 
 	while (running)
 	{
-
 		if (!get_input())
 			running = false;
 
@@ -353,7 +353,7 @@ int main(int argc, char* argv[])
 			out_of_sync_cnt--;
 		}
 
-		if (frames_cnt > 40 && activeTest->MustBeJitterFree() && draw_jitter_graph)
+		if (last_frame_times.size() > 2 && activeTest->MustBeJitterFree() && draw_jitter_graph)
 		{
 			drawJitterGraph();
 		}
@@ -370,7 +370,11 @@ int main(int argc, char* argv[])
 		double now	= (tp.tv_nsec / 1000000.0 + tp.tv_sec * 1000.0);
 		double diff = now - last_frame;
 
-		if (frames_cnt > 10)
+		if (ignore_frametime)
+		{
+			ignore_frametime--;
+		}
+		else
 		{
 			last_frame_times.push_back(diff);
 			if (last_frame_times.size() > 100)
@@ -380,7 +384,7 @@ int main(int argc, char* argv[])
 		frame_times_avg =
 			std::accumulate(std::begin(last_frame_times), std::end(last_frame_times), 0.0) / last_frame_times.size();
 
-		if (frames_cnt > 30)
+		if (last_frame_times.size() > 15)
 		{
 			frames_per_second = 1000.0 / frame_times_avg;
 			pixels_per_second = possible_pixels_per_second.at(speed_index);
@@ -425,6 +429,8 @@ static bool get_input(void)
 		switch (event.type)
 		{
 		case SDL_WINDOWEVENT:
+			// printf("SDL_WINDOWEVENT %d\n", event.window.event);
+
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
 			{
 				screen_width  = event.window.data1;
@@ -432,6 +438,21 @@ static bool get_input(void)
 				// printf("Resized to %d %d\n", event.window.data1, event.window.data2);
 				activeTest->screenResized();
 			}
+
+			switch (event.window.event)
+			{
+			case SDL_WINDOWEVENT_EXPOSED:
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+			case SDL_WINDOWEVENT_RESIZED:
+			case SDL_WINDOWEVENT_MAXIMIZED:
+			case SDL_WINDOWEVENT_MINIMIZED:
+			case SDL_WINDOWEVENT_RESTORED:
+				last_frame_times.clear();
+				ignore_frametime = 20;
+				out_of_sync_cnt	 = 0;
+				break;
+			}
+
 			break;
 		case SDL_QUIT:
 			return false; // The little X in the window got pressed
