@@ -47,11 +47,22 @@ configure_file(
 find_file(FONT
 	NAMES
 	FreeSans.ttf
+	FreeSans.otf
 	FreeSerif.ttf
+	FreeSerif.otf
 	arial.ttf
 	REQUIRED
 	PATHS
 	"/usr/share/fonts/truetype/freefont"
+	"/usr/share/fonts/freefont"
+	"/usr/share/fonts/TTF/"
+	"/usr/share/fonts/OTF/"
+	"/usr/share/fonts/gnu-free/"
+	"/usr/local/share/fonts/truetype/freefont"
+	"/usr/local/share/fonts/freefont"
+	"/usr/local/share/fonts/TTF/"
+	"/usr/local/share/fonts/OTF/"
+	"/usr/local/share/fonts/gnu-free/"
 	"C:/Windows/Fonts/"
 	)
 
