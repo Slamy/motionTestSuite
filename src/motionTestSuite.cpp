@@ -261,15 +261,6 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	// Activate Real Time Scheduler
-	struct sched_param sp;
-	sp.sched_priority = sched_get_priority_max(SCHED_RR);
-	if (sp.sched_priority == -1)
-	{
-		std::cout << "sched_get_priority_min failed\n";
-		return 1;
-	}
-
 	if (sched_setscheduler(0, SCHED_RR, &sp) == -1)
 	{
 		std::cout << "sched_setscheduler failed\n";
