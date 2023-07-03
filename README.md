@@ -6,7 +6,7 @@ This is software related to testing motion clarity of displays.
 
 ## Why?
 
-It's 2020 and monitor manufactures struggle to engineer a TFT display which comes even close to the motion clarity the CRTs in the past were able to produce.
+It's $CURRENT_YEAR and monitor manufactures struggle to engineer a TFT display which comes even close to the motion clarity the CRTs in the past were able to produce.
 There exists a whole community around this topic and seems to be centered around the [Blur Busters](https://blurbusters.com/).
 There even exists a test which can be executed in the browser called the [UFO Test](https://www.testufo.com/).
 
@@ -24,6 +24,7 @@ This software is delivered as is. The author can't be held responsible for damag
 	mkdir build
 	cd build
 	cmake ..
+ 	make
 
 ### How to build with eclipse sibling project
 
@@ -43,7 +44,7 @@ This software is delivered as is. The author can't be held responsible for damag
 
 For pursuit camera test you probably want to use
 
-    ./motionTestSuite --vsync --full
+    ./motionTestSuite --full
 
 ### Keyboard Shortcuts
 
@@ -128,7 +129,7 @@ You can check if the test is executed with the correct framerate by activating A
 The `testpattern.png` file can be replaced with a custom graphic.
 To use the Blur Busters TestUFO execute these lines on the shell:
 
-	wget https://www.testufo.com/images-test/ghosting/bbufo-tinytext-markers.png
+	curl -LO https://www.testufo.com/images-test/ghosting/bbufo-tinytext-markers.png
 	convert bbufo-tinytext-markers.png testpattern.bmp
 
 Please keep in mind that this application might not be suitable for official testing means
@@ -138,5 +139,5 @@ To ensure this policy, this application has a pursuit track with different color
 
 ### I have motion sickness now
 
-You are not supposed to look at the test for more than a few seconds
-
+You are not supposed to look at the test for more than a few seconds.
+Seriously, don't do this. I do not take any responsibility for vomited keyboards or monitors.
