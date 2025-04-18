@@ -269,11 +269,9 @@ int main(int argc, char* argv[])
 		std::cout << "sched_get_priority_min failed\n";
 		return 1;
 	}
-
-	if (sched_setscheduler(0, SCHED_RR, &sp) == -1)
+	else if (sched_setscheduler(0, SCHED_RR, &sp) == -1)
 	{
 		std::cout << "sched_setscheduler failed\n";
-		return 1;
 	}
 
 	// Initialize SDL Context
